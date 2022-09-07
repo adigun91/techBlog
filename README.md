@@ -6,3 +6,4 @@
 # Navigate to blog_project
 # Install the requirements using: pip install -r requirements.txt
 # run the python manage.py runserver to run the server
+# working on the comment section which is not completed yet
