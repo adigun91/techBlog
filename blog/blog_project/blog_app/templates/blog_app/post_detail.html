@@ -19,13 +19,27 @@
     </article>
     <div class="content-section">
         <h2>Comments(0)</h2>
+        <div class="media-list">
+            {% for comment in post_comments %}
+            <div>
+                <img class = "rounded-circle article-img" src="{{ object.user.profile.image.url }}">
+                <div class="media-body">
+                    <div class="small-1">
+                        <b>{{comment.user}}</b>
+                        <time class="ml-4 opacity-70 small-3">{{comment.date}}</time>
+                    </div>
+                    <p>{{comment.comment}}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
         <form action="" method="POST">
             {% csrf_token %}
             <fieldset class="form-group">
                 {{ form }}
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Comment!</button>
+                <button class="btn btn-outline-info" type="submit">Comment</button>
             </div>
         </form>
     </div>

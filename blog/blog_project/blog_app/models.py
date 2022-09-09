@@ -7,19 +7,6 @@ from django.contrib.auth.models import User #imported becuase we want to associa
 from django.urls import reverse
 
 # Create your models here.
-#Add the comment model below
-class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
-    post = models.ForeignKey('POST', on_delete=models.CASCADE)
-    comment = models.TextField()
-    
-    def __str__(self):
-        return self.user
-    
-    #get the absolute url of the comment and redirect the newly created comment to the post detail
-    def get_absolute_url(self):
-        return reverse('post-detail', kwargs={'pk': self.pk})  
     
 #Add the Post model below
 class Post(models.Model):
@@ -36,3 +23,12 @@ class Post(models.Model):
         return reverse('post-detail', kwargs={'pk': self.pk})    
     
     
+#Add the comment model below
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    comment = models.TextField(max_length=400)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    
+    
+  

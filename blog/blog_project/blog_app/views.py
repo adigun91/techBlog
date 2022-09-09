@@ -1,9 +1,13 @@
+from http.client import HTTPResponse
 import imp
+from multiprocessing import context
+from unicodedata import name
+from django.urls import reverse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
+from .models import Post, Comment
 from .forms import CommentForm
 
 # Create your fxn views here.
@@ -33,7 +37,7 @@ class UserPostListView(ListView):
         return Post.objects.filter(author=user).order_by('-date_posted')
     
 #class based view for the individual post object
-class PostDetailView(DetailView, LoginRequiredMixin):
+class PostDetailView(DetailView):
     model = Post
     
     form = CommentForm    
@@ -45,14 +49,15 @@ class PostDetailView(DetailView, LoginRequiredMixin):
             form.instance.user = request.user
             form.instance.post = post
             form.save()
-             
-            return redirect(reverse("post", kwargs={
-                'content': post.content
-            }))
+            return redirect(reverse('post-detail', kwargs={'pk': post.pk}))
         
     def get_context_data(self, **kwargs):
+        post_comments = Comment.objects.all().filter(post=self.object.id)
         context = super().get_context_data(**kwargs)
-        context["form"] = self.form
+        context.update({
+            'form': self.form,
+            'post_comments': post_comments,
+        })
         return context      
 
 #class based view to create new posts
