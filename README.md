@@ -1,4 +1,4 @@
-# techBro
+# techBlog
 # techBlog is a blog you cannot access until you are logged in
 # techBro is a blog where techBros come together to assist one another and then help others to be better in their tech journey
 # Clone the repo and do the following:
