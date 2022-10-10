@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .forms import CommentForm
 
 # Create your fxn views here.
@@ -16,6 +16,28 @@ def home(request):
         'posts': Post.objects.all()
     }
     return render(request, 'blog_app/home.html', context)
+
+#likes comment not working
+def like_post(request, post_id):
+    user = request.user
+    if request.method == 'POST':
+        post_id = request.POST.get('post_id')
+        post_obj = Post.objects.get(id=post_id)
+            
+        if user in post_obj.liked.all():
+            post_obj.liked.remove(user)
+        else:
+            post_obj.liked.add(user)
+            
+        like, created = Like.objects.get_or_created(user=user, post_id=post_id)
+            
+        if not created:
+            if like.value == 'Like':
+                like.value = 'Unlike'
+            else:
+                like.value = 'like'
+        like.save()
+    return redirect(reverse(request, 'post-detail'))
 
 #class based views for the fuction view of home
 class PostListView(ListView):
@@ -52,13 +74,16 @@ class PostDetailView(DetailView):
             return redirect(reverse('post-detail', kwargs={'pk': post.pk}))
         
     def get_context_data(self, **kwargs):
+        post_comments_count = Comment.objects.all().filter(post=self.object.id).count()
         post_comments = Comment.objects.all().filter(post=self.object.id)
         context = super().get_context_data(**kwargs)
         context.update({
             'form': self.form,
             'post_comments': post_comments,
+            'post_comments_count': post_comments_count,
         })
-        return context      
+        return context    
+ 
 
 #class based view to create new posts
 class PostCreateView(LoginRequiredMixin, CreateView):

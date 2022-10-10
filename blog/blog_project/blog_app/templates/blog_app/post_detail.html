@@ -17,8 +17,21 @@
             <p class="article-content">{{ object.content }}</p>
         </div>
     </article>
+    
+    <form action="{% url 'like-post' %}", method="POST", class="ui form">
+        {% csrf_token %}
+        <input type="hidden" name="post_id" value="{{ obj.id }}">
+        {% if user not in obj.liked.all %}
+            <button class="ui button positive" type="submit">Like</button>
+        {% else %}
+            <button class="ui button negative" type="submit">Unlike</button>
+        {% endif %}
+    </form>
+    <strong>{{ obj.liked.all.count }}likes</strong>
+    
+    <hr>
     <div class="content-section">
-        <h2>Comments(0)</h2>
+        <h2>Comments({{ post_comments_count }})</h2>
         <div class="media-list">
             {% for comment in post_comments %}
             <div>
